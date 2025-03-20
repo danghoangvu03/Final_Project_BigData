@@ -1,4 +1,5 @@
 package Project
+
 import org.apache.spark.sql.{SparkSession, DataFrame}
 import org.apache.spark.sql.functions._
 import scala.io.StdIn
@@ -12,7 +13,7 @@ object MovieAnalysis {
 
     import spark.implicits._
     // Load movies data
-    val moviesDF = spark.read.option("delimiter", "::").csv("data/Project/movies.dat")
+    var moviesDF = spark.read.option("delimiter", "::").csv("data/Project/movies.dat")
       .toDF("MovieID", "Title", "Genres")
 
     // Load ratings data
@@ -27,7 +28,11 @@ object MovieAnalysis {
       println("3. Number of movies starting with each letter/number")
       println("4. Number of movies per genre")
       println("5. Distinct list of genres")
-      println("6. Exit")
+      println("6. Add a new movie")
+      println("7. Update a movie title")
+      println("8. Delete a movie")
+      println("9. View all movies")
+      println("10. Exit")
       print("Enter your choice: ")
 
       val choice = StdIn.readInt()
@@ -74,6 +79,38 @@ object MovieAnalysis {
           distinctGenres.show(false)
 
         case 6 =>
+          print("Enter new MovieID: ")
+          val newMovieID = StdIn.readLine()
+          print("Enter Movie Title: ")
+          val newTitle = StdIn.readLine()
+          print("Enter Genres (separated by |): ")
+          val newGenres = StdIn.readLine()
+
+          val newMovie = Seq((newMovieID, newTitle, newGenres)).toDF("MovieID", "Title", "Genres")
+          moviesDF = moviesDF.union(newMovie)
+          println("Movie added successfully!")
+
+        case 7 =>
+          print("Enter MovieID to update: ")
+          val updateMovieID = StdIn.readLine()
+          print("Enter new title: ")
+          val newTitle = StdIn.readLine()
+
+          moviesDF = moviesDF.withColumn("Title", when(col("MovieID") === updateMovieID, newTitle).otherwise(col("Title")))
+          println("Movie title updated successfully!")
+
+        case 8 =>
+          print("Enter MovieID to delete: ")
+          val deleteMovieID = StdIn.readLine()
+
+          moviesDF = moviesDF.filter(col("MovieID") =!= deleteMovieID)
+          println("Movie deleted successfully!")
+
+        case 9 =>
+          println("All movies:")
+          moviesDF.show(false)
+
+        case 10 =>
           println("Exiting program...")
           exit = true
 
