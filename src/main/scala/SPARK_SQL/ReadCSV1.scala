@@ -16,9 +16,9 @@ object ReadCSV1 {
       //;//
      //.option("lineSep",";")
       // one_file_data
-      .csv(path = "data/data/read2.csv")
+      //.csv(path = "data/data/read2.csv")
       //two_file_data
-     //.csv(paths=List("data/data/JSON_Files/read.csv","data/data/JSON_Files/read2.csv"):_*)
+     .csv(paths=List("data/data/JSON_Files/read.csv","data/data/JSON_Files/read2.csv"):_*)
       //.csv("data/data/JSON_Files/*.csv")
     datadf.printSchema()
     datadf.show()
